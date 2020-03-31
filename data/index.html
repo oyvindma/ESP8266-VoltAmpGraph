@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.24.0/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script src="https://unpkg.com/chartjs-plugin-streaming@1.8.0/dist/chartjs-plugin-streaming.min.js"></script>
+<script src="./websocketsetup.js"></script>
+<script src="./voltampgraph.js"></script>
+
+<script language="javascript" type="text/javascript">
+    function initApp(){
+      ch1 = new Channel();
+      ch2 = new Channel();
+      ch3 = new Channel();      sensorChartCh1 = new VoltAmpChart("chartChannel1", 1);
+      sensorChartCh2 = new VoltAmpChart("chartChannel2", 2);
+      sensorChartCh3 = new VoltAmpChart("chartChannel3", 3);
+      
+      output = document.getElementById("output");
+      websocket = new WebSocket(wsUri);
+      websocket.onopen = function(evt) { onOpen(evt) };
+      websocket.onclose = function(evt) { onClose(evt) };
+      websocket.onmessage = function(evt) { onMessage(evt) };
+      websocket.onerror = function(evt) { onError(evt) };
+
+
+    }
+    window.addEventListener("load", initApp, false);
+    
+</script>
+
+<body>
+    <h2>WebSocket Test</h2>
+    
+    <div style="width: 60%;">
+        <canvas id="chartChannel1"></canvas>
+        <div id="ch1mAh"></div>
+    </div>
+    <div style="width: 60%;">
+        <canvas id="chartChannel2"></canvas>
+        <div id="ch2mAh"></div>
+    </div>
+    <div style="width: 60%;">
+        <canvas id="chartChannel3"></canvas>
+        <div id="ch3mAh"></div>
+    </div>
+    
+    <div id="output"></div>
+
+    <!--  -->
+
+    <h3>Set interval</h1>
+    <div class="slidecontainer">
+      <input type="range" min="200" max="10000" value="1000" class="slider" id="myRange">
+      <p>Value: <span id="demo"></span></p>
+    </div>
+    <script>
+      var slider = document.getElementById("myRange");
+      var output = document.getElementById("demo");
+      output.innerHTML = slider.value;
+      
+      slider.oninput = function() {
+        output.innerHTML = this.value;
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+           // do nothing
+          }
+        };
+        xhttp.open("POST", "http://192.168.81.236/interval?value="+this.value, true);
+        xhttp.send();
+      }
+      </script>
+    
+</body>
+</html>
